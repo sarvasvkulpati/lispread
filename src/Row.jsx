@@ -12,7 +12,7 @@ const Row = ({rowIdx, colIdx, numCols, data, setData}) => {
 
 
 
-   
+    
 
     cells.push(
       <Cell 
@@ -20,6 +20,7 @@ const Row = ({rowIdx, colIdx, numCols, data, setData}) => {
         rowIdx = {rowIdx} 
         colIdx={colIdx} 
         data={data}
+   
         setData={setData}/>)
   }
 

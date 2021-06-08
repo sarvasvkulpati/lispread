@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
-import Cell from './Cell.js'
 import Sheet from './Sheet.jsx'
 import './index.css'
 
 
 
-const numRows= 10
-const numCols = 30
+const numRows= 26
+const numCols = 100
 
 
 let initialData = []
@@ -21,6 +20,7 @@ for (let ri = 0; ri < numRows; ri++) {
         row: ri,
         col: ci,
         content: '',
+        formula: '',
         isSelected: false
 
         })
@@ -36,7 +36,7 @@ function App() {
 
   let [data, setData] = useState(initialData)
 
-
+  
   
   
 
