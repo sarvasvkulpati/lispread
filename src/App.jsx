@@ -4,18 +4,19 @@ import './index.css'
 
 
 
-const numRows= 26
-const numCols = 100
-
+const numRows= 100
+const numCols = 27
 
 let initialData = []
 for (let ri = 0; ri < numRows; ri++) {
+
+    let row = []
  
 
     for (let  ci = 0; ci < numCols; ci++) {
 
 
-      initialData.push({
+      row.push({
 
         row: ri,
         col: ci,
@@ -25,6 +26,8 @@ for (let ri = 0; ri < numRows; ri++) {
 
         })
     }
+
+    initialData.push(row)
   }
 
 
