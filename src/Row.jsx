@@ -27,4 +27,6 @@ const Row = ({row, col, numCols, data, commitData}) => {
   return <div className="flex flex-row flex-nowrap">{cells}</div>
 }
 
-export default React.memo(Row, (prevProps, newProps) => {return prevProps.data == newProps.data})
+// export default React.memo(Row, (prevProps, newProps) => {console.log(prevProps.data, newProps.data, prevProps.data == newProps.data);return prevProps.data == newProps.data})
+
+export default Row

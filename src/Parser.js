@@ -13,6 +13,14 @@
   }
 
 
+  
+  let indexesToId = (row, col) => {
+    let rowNum = Number(row) 
+    
+    let colLetter= String.fromCharCode(64 + Number(col))
+    return colLetter + rowNum
+  }
+
   let idToIndexes = (id) => {
     let colLetter = id[0]
     let col = colLetter.charCodeAt(0) - 64
@@ -23,6 +31,7 @@
   
   export function parseFormula(content, data) {
     
+    console.log('parsing', content)
 
 
 
@@ -61,14 +70,14 @@
 
     let ast = tokens_to_ast(tokens)
 
-  
+    console.log('ast is', ast)
 
     let dependencies = []
 
     let evaluate = (x) => {
 
 
-      // console.log('evaluating', x)
+      console.log('evaluating', x)
 
       // if it's a cellId
       if (typeof (x) == 'string' && x.match(/[A-Z][0-9]/)) {
@@ -78,6 +87,8 @@
 
         let [row, col] = idToIndexes(x)
         
+        console.log(x, 'is ', data[row][col].content)
+
         return data[row][col].content
 
       }
@@ -103,6 +114,8 @@
         let proc = evaluate(x[0])
         let args = x.slice(1).map((arg) => evaluate(arg))
 
+
+        console.log(proc, args, args.reduce(proc))
         return args.reduce(proc)
       }
     }

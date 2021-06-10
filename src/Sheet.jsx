@@ -12,8 +12,9 @@ function Sheet({numRows, numCols, data, setData}){
 
 
   let indexesToId = (row, col) => {
-    let rowNum = Number(col) 
-    let colLetter= String.fromCharCode(64 + Number(row))
+    let rowNum = Number(row) 
+    
+    let colLetter= String.fromCharCode(64 + Number(col))
     return colLetter + rowNum
   }
 
@@ -25,79 +26,103 @@ function Sheet({numRows, numCols, data, setData}){
   }
 
 
+  let getDependentCells = (cellData)  => {
+    
+    let dependentCells = []
+    let helper = (cellData) => {
+
+      cellData.dependencyOf.forEach((cellId) => {
+
+        dependentCells.push(cellId)
+        let [dependentRow, dependentCol] = idToIndexes(cellId)
+        let newCell = data[dependentRow][dependentCol]
+
+        helper(newCell)
+      })
+    }
+
+    helper(cellData)
+    return dependentCells
+  }
 
 
   let updateDependencyGraph = (newInput, row, col) => {
 
-
-    
-    let prevData = data[row][col]
-
-    console.log('prev', prevData)
-   
-    
-    let {dependencies, result} = parseFormula(newInput, data)
-
-
-    console.log(result, dependencies)
-    // don't let the cell refer to itself
-    if (dependencies.includes(indexesToId(row, col))) {
-      alert("can't refer to self")
-      return
-    }
-
+    console.log(data)
 
     let dataCopy = [...data]
+    let prevData = dataCopy[row][col]
+    let isFormula = (newInput[0] == '=')
 
-    //find dropped dependencies if any. All of these are cell IDs, e.g. A1, B3, C4
-    if(prevData.content[0] == '=') {
+    if(isFormula) {
 
-      let {dependencies: oldDependencies} = parseFormula(prevData.content, data)
-      
-
-      let droppedDependencies = oldDependencies.filter((dependency) => {
-        return !dependencies.includes(dependency)
-      })
+      let {dependencies, result} = parseFormula(newInput, data)
 
 
-      droppedDependencies.forEach((id) => {
-        let [droppedRow, droppedCol] = idToIndexes(id)
-        
-
-        let updateCell = dataCopy[row][col]
-
-        updateCell.dependencyOf = updateCell.dependencyOf.filter((cellId) => cellId != indexesToId(row, col))
-
-      })
-      
-    }
-    
-
-    //set dependencies
-    for (let dependency of dependencies) {
-      let [ dependencyRow, dependencyCol] = idToIndexes(dependency)
-      
-      let dependencyCell = dataCopy[row][col]
-
-      let id = indexesToId(row, col)
-
-      if(dependencyCell.dependencyOf.indexOf(id) == -1) {
-        dependencyCell.dependencyOf.push(id)
+      // don't let the cell refer to itself
+      if (dependencies.includes(indexesToId(row, col))) {
+        alert("can't refer to self")
+        return
       }
-    }
+
+
+
+      //find dropped dependencies if any and remove the cells id from them. All of these are cell IDs, e.g. A1, B3, C4
+      if(prevData.content[0] == '=') {
+      
+        let {dependencies: oldDependencies} = parseFormula(prevData.formula, data)
+        let droppedDependencies = oldDependencies.filter((dependency) => {
+
+          return !dependencies.includes(dependency)
+        })
+
+        droppedDependencies.forEach((id) => {
+
+          let [droppedRow, droppedCol] = idToIndexes(id)
+          let updateCell = dataCopy[droppedRow][droppedCol]
+          updateCell.dependencyOf = updateCell.dependencyOf.filter((cellId) => cellId != indexesToId(row, col))
+        })
+      }
+      
+
+
+      //set dependencies
+      for (let dependency of dependencies) {
+
+        let [ dependencyRow, dependencyCol] = idToIndexes(dependency)
+        let dependencyCell = dataCopy[dependencyRow][dependencyCol]
+        let id = indexesToId(row, col)
+
+        if(dependencyCell.dependencyOf.indexOf(id) == -1) {
+          
+          dependencyCell.dependencyOf.push(id)
+        }
+      }
+
     
 
-
-    if(newInput[0] == '=') {
       dataCopy[row][col].formula = newInput
-      
-      dataCopy[row][col].content = result
-      dataCopy[row][col].dependencyOf = dependencies
-      
+      dataCopy[row][col].content = result 
     } else {
+
       dataCopy[row][col].content = newInput
     }
+
+
+    //update dependent cells
+    let dependentCells = getDependentCells(dataCopy[row][col])
+    dependentCells.forEach((dependentCellId) => {
     
+      let [dependentRow, dependentCol] = idToIndexes(dependentCellId)
+
+     
+      let {result: dependentResult} = parseFormula(dataCopy[dependentRow][dependentCol].formula, dataCopy)
+
+      console.log(dependentCellId, 'had the result', dependentResult)
+      dataCopy[dependentRow][dependentCol].content = dependentResult
+    })
+    
+     
     setData(dataCopy)
   }
 

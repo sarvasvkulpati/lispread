@@ -5,7 +5,7 @@ import './index.css'
 
 
 const numRows= 100
-const numCols = 27
+const numCols = 26
 
 let initialData = []
 for (let ri = 0; ri < numRows; ri++) {
