@@ -11,20 +11,19 @@
  
  
   }
-  
-  export function parseFormula(content, data, row, col) {
-    
-  let determineContent = (text) => {
-    
-    if(text[0] == '=') {
-      let {result} = parseFormula(text)
-      return result
-    } else {
 
-     
-      return text
-    }
+
+  let idToIndexes = (id) => {
+    let colLetter = id[0]
+    let col = colLetter.charCodeAt(0) - 64
+    let row = Number(id[1] )
+    return [row, col]
   }
+
+  
+  export function parseFormula(content, data) {
+    
+
 
 
     try {
@@ -77,10 +76,9 @@
 
         dependencies.push(x)
 
-
-
-
-        return determineContent(data[row][col].content)
+        let [row, col] = idToIndexes(x)
+        
+        return data[row][col].content
 
       }
       // it's a number

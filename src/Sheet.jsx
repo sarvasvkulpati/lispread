@@ -32,10 +32,14 @@ function Sheet({numRows, numCols, data, setData}){
 
     
     let prevData = data[row][col]
+
+    console.log('prev', prevData)
    
     
-    let {dependencies, result} = parseFormula(newInput, data, row, col)
+    let {dependencies, result} = parseFormula(newInput, data)
 
+
+    console.log(result, dependencies)
     // don't let the cell refer to itself
     if (dependencies.includes(indexesToId(row, col))) {
       alert("can't refer to self")
@@ -48,7 +52,7 @@ function Sheet({numRows, numCols, data, setData}){
     //find dropped dependencies if any. All of these are cell IDs, e.g. A1, B3, C4
     if(prevData.content[0] == '=') {
 
-      let {dependencies: oldDependencies} = parseFormula(prevData.content, data, row, col)
+      let {dependencies: oldDependencies} = parseFormula(prevData.content, data)
       
 
       let droppedDependencies = oldDependencies.filter((dependency) => {
@@ -75,10 +79,10 @@ function Sheet({numRows, numCols, data, setData}){
       
       let dependencyCell = dataCopy[row][col]
 
-      
+      let id = indexesToId(row, col)
 
-      if(dependencyCell.dependencyOf.indexOf(dependency) == -1) {
-        dependencyCell.dependencyOf.push(dependency)
+      if(dependencyCell.dependencyOf.indexOf(id) == -1) {
+        dependencyCell.dependencyOf.push(id)
       }
     }
     
