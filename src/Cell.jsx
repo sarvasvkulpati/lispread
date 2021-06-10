@@ -62,10 +62,13 @@ function Cell({row, col, data, commitData}) {
 
 
   let determineContent = (text) => {
+    
     if(text[0] == '=') {
       let {result} = parseFormula(text)
       return result
     } else {
+
+     
       return text
     }
   }
@@ -94,8 +97,11 @@ function Cell({row, col, data, commitData}) {
 
 
 
-  console.log('here at', row, col, data)
+  
 
+
+  let result = determineContent(data.content)
+  
   return(
     <>
       {isSelected &&  
@@ -108,7 +114,7 @@ function Cell({row, col, data, commitData}) {
       {!isSelected && 
       <span 
         className="min-w-32 w-32 min-h-8 h-8 box-border relative inline-block border border-gray-300 px-1 "
-        onClick={onClick}>{determineContent(data.content)}</span>}
+        onClick={onClick}>{result}</span>}
     </>
   )
 

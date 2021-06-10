@@ -27,19 +27,14 @@ function Sheet({numRows, numCols, data, setData}){
 
 
 
-
-
-
-
-
   let updateDependencyGraph = (newInput, row, col) => {
 
 
-    console.log('newInput', newInput)
-    let prevData = data[row][col]
-    console.log('prev', prevData)
     
-    let {dependencies, result} = parseFormula(newInput)
+    let prevData = data[row][col]
+   
+    
+    let {dependencies, result} = parseFormula(newInput, data, row, col)
 
     // don't let the cell refer to itself
     if (dependencies.includes(indexesToId(row, col))) {
@@ -53,7 +48,7 @@ function Sheet({numRows, numCols, data, setData}){
     //find dropped dependencies if any. All of these are cell IDs, e.g. A1, B3, C4
     if(prevData.content[0] == '=') {
 
-      let {dependencies: oldDependencies} = parseFormula(prevData.content)
+      let {dependencies: oldDependencies} = parseFormula(prevData.content, data, row, col)
       
 
       let droppedDependencies = oldDependencies.filter((dependency) => {
@@ -75,19 +70,30 @@ function Sheet({numRows, numCols, data, setData}){
     
 
     //set dependencies
-    for (dependency of dependencies) {
+    for (let dependency of dependencies) {
       let [ dependencyRow, dependencyCol] = idToIndexes(dependency)
       
       let dependencyCell = dataCopy[row][col]
 
-      let id = indexesToId(row, col)
+      
 
-      if(dependencyCell.dependencyOf.indexOf(id) == -1) {
-        dependencyCell.dependencyOf.push(id)
+      if(dependencyCell.dependencyOf.indexOf(dependency) == -1) {
+        dependencyCell.dependencyOf.push(dependency)
       }
     }
     
-    dataCopy[row][col].content = newInput
+
+
+    if(newInput[0] == '=') {
+      dataCopy[row][col].formula = newInput
+      
+      dataCopy[row][col].content = result
+      dataCopy[row][col].dependencyOf = dependencies
+      
+    } else {
+      dataCopy[row][col].content = newInput
+    }
+    
     setData(dataCopy)
   }
 

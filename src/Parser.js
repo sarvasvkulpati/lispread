@@ -12,7 +12,19 @@
  
   }
   
-  export function parseFormula(content) {
+  export function parseFormula(content, data, row, col) {
+    
+  let determineContent = (text) => {
+    
+    if(text[0] == '=') {
+      let {result} = parseFormula(text)
+      return result
+    } else {
+
+     
+      return text
+    }
+  }
 
 
     try {
@@ -68,7 +80,7 @@
 
 
 
-        return determineContent(getCellAt(...idToIndexes(x)).content)
+        return determineContent(data[row][col].content)
 
       }
       // it's a number

@@ -22,7 +22,8 @@ for (let ri = 0; ri < numRows; ri++) {
         col: ci,
         content: '',
         formula: '',
-        isSelected: false
+        isSelected: false,
+        dependencyOf: []
 
         })
     }
